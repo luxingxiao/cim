@@ -33,9 +33,7 @@ public class CIMServerApplication implements CommandLineRunner{
 
 	@Override
 	public void run(String... args) throws Exception {
-		//获得本机IP
-		String addr = InetAddress.getLocalHost().getHostAddress();
-		Thread thread = new Thread(new RegistryZK(addr, appConfiguration.getCimServerPort(),httpPort));
+		Thread thread = new Thread(new RegistryZK(appConfiguration.getCimServerIp(), appConfiguration.getCimServerPort(),httpPort));
 		thread.setName("registry-zk");
 		thread.start() ;
 	}

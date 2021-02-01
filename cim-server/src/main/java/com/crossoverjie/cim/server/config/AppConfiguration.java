@@ -22,6 +22,9 @@ public class AppConfiguration {
     @Value("${app.zk.switch}")
     private boolean zkSwitch;
 
+    @Value("${cim.server.ip}")
+    private String cimServerIp;
+
     @Value("${cim.server.port}")
     private int cimServerPort;
 
@@ -84,5 +87,13 @@ public class AppConfiguration {
 
     public void setHeartBeatTime(long heartBeatTime) {
         this.heartBeatTime = heartBeatTime;
+    }
+
+    public void setCimServerIp(String cimServerIp) {
+        this.cimServerIp = cimServerIp;
+    }
+
+    public String getCimServerIp() {
+        return cimServerIp;
     }
 }
