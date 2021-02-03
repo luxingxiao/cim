@@ -1,4 +1,4 @@
-package com.biyao.test.controller;
+package com.crossoverjie.cim.route.controller;
 
 import com.crossoverjie.cim.common.enums.StatusEnum;
 import com.crossoverjie.cim.common.res.BaseResponse;
@@ -7,7 +7,6 @@ import com.crossoverjie.cim.route.api.vo.res.RegisterInfoResVO;
 import com.crossoverjie.cim.route.service.AccountService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,11 +15,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/by")
 public class AccountsInitController {
     private final static Logger LOGGER = LoggerFactory.getLogger(AccountsInitController.class);
-    private final RedisTemplate redisTemplate;
     private final AccountService accountService;
 
-    public AccountsInitController(RedisTemplate redisTemplate, AccountService accountService) {
-        this.redisTemplate = redisTemplate;
+    public AccountsInitController( AccountService accountService) {
         this.accountService = accountService;
     }
 
