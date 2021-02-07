@@ -5,6 +5,7 @@ import com.crossoverjie.cim.common.route.algorithm.consistenthash.AbstractConsis
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import okhttp3.Dispatcher;
 import okhttp3.OkHttpClient;
 import org.I0Itec.zkclient.ZkClient;
 import org.slf4j.Logger;
@@ -75,10 +76,14 @@ public class BeanConfig {
      */
     @Bean
     public OkHttpClient okHttpClient() {
+        Dispatcher dispatcher = new Dispatcher();
+        dispatcher.setMaxRequests(1000000);
+        dispatcher.setMaxRequestsPerHost(1000000);
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
-        builder.connectTimeout(30, TimeUnit.SECONDS)
-                .readTimeout(10, TimeUnit.SECONDS)
-                .writeTimeout(10, TimeUnit.SECONDS)
+        builder.connectTimeout(5, TimeUnit.MINUTES)
+                .readTimeout(5, TimeUnit.MINUTES)
+                .writeTimeout(5, TimeUnit.MINUTES)
+                .dispatcher(dispatcher)
                 .retryOnConnectionFailure(true);
         return builder.build();
     }
