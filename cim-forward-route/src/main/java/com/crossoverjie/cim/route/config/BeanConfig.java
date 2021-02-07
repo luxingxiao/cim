@@ -18,6 +18,9 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 import java.lang.reflect.Method;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -81,8 +84,8 @@ public class BeanConfig {
                 .writeTimeout(5, TimeUnit.MINUTES)
                 .retryOnConnectionFailure(true);
         OkHttpClient okHttpClient =  builder.build();
-        okHttpClient.dispatcher().setMaxRequestsPerHost(100000);
-        okHttpClient.dispatcher().setMaxRequests(100000);
+        okHttpClient.dispatcher().setMaxRequestsPerHost(10000);
+        okHttpClient.dispatcher().setMaxRequests(10000);
         return okHttpClient;
     }
 
