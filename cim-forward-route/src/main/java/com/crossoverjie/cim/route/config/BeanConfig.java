@@ -76,11 +76,14 @@ public class BeanConfig {
     @Bean
     public OkHttpClient okHttpClient() {
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
-        builder.connectTimeout(30, TimeUnit.SECONDS)
-                .readTimeout(10, TimeUnit.SECONDS)
-                .writeTimeout(10, TimeUnit.SECONDS)
+        builder.connectTimeout(5, TimeUnit.MINUTES)
+                .readTimeout(5, TimeUnit.MINUTES)
+                .writeTimeout(5, TimeUnit.MINUTES)
                 .retryOnConnectionFailure(true);
-        return builder.build();
+        OkHttpClient okHttpClient =  builder.build();
+        okHttpClient.dispatcher().setMaxRequestsPerHost(100000);
+        okHttpClient.dispatcher().setMaxRequests(100000);
+        return okHttpClient;
     }
 
     @Bean
