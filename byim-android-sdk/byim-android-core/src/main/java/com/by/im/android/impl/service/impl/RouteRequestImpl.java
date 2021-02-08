@@ -2,9 +2,9 @@ package com.by.im.android.impl.service.impl;
 
 
 import com.alibaba.fastjson.JSON;
-import com.by.im.android.api.IMClient;
 import com.by.im.android.api.IMClientFactory;
 import com.by.im.android.api.Logger;
+import com.by.im.android.impl.BeanFactory;
 import com.by.im.android.impl.service.RouteRequest;
 import com.by.im.android.impl.thread.ContextHolder;
 import com.by.im.android.vo.req.GroupReqVO;
@@ -27,11 +27,13 @@ public class RouteRequestImpl implements RouteRequest {
 
     private OkHttpClient okHttpClient ;
 
-    private String routeUrl ;
+    private String routeUrl;
 
     private Logger logger;
     public RouteRequestImpl(Logger logger){
         this.logger = logger;
+        this.okHttpClient = BeanFactory.getInstance().okHttpClient();
+        this.routeUrl = IMClientFactory.getIMClient().getConfig().getServerUrl();
     }
 
     @Override
@@ -76,7 +78,6 @@ public class RouteRequestImpl implements RouteRequest {
 
     @Override
     public ServerResVO.ServerInfo getCIMServer(LoginReqVO loginReqVO) throws Exception {
-
         RouteApi routeApi = new ProxyManager<>(RouteApi.class, routeUrl, okHttpClient).getInstance();
         com.by.im.common.route.api.vo.req.LoginReqVO vo = new com.by.im.common.route.api.vo.req.LoginReqVO() ;
         vo.setUserId(loginReqVO.getUserId());

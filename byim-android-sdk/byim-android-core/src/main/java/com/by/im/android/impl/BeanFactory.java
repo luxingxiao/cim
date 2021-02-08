@@ -12,6 +12,7 @@ import com.by.im.common.construct.RingBufferWheel;
 import com.by.im.common.kit.HeartBeatHandler;
 import com.by.im.common.protocol.CIMRequestProto;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import okhttp3.OkHttpClient;
 
 import java.util.concurrent.*;
 
@@ -25,6 +26,7 @@ public class BeanFactory {
     private RouteRequest routeRequest;
     private ReConnectManager reConnectManager;
     private ShutDownMsg shutDownMsg;
+    private OkHttpClient okHttpClient;
 
     private BeanFactory() {
 
@@ -32,6 +34,19 @@ public class BeanFactory {
 
     public static BeanFactory getInstance() {
         return beanFactory;
+    }
+
+
+    public OkHttpClient okHttpClient() {
+        if (okHttpClient == null) {
+            OkHttpClient.Builder builder = new OkHttpClient.Builder();
+            builder.connectTimeout(IMClientFactory.getIMClient().getConfig().getOkHttpConnectTimeout(), TimeUnit.SECONDS)
+                    .readTimeout(IMClientFactory.getIMClient().getConfig().getOkHttpReadTimeout(), TimeUnit.SECONDS)
+                    .writeTimeout(IMClientFactory.getIMClient().getConfig().getOkHttpWriteTimeout(), TimeUnit.SECONDS)
+                    .retryOnConnectionFailure(true);
+            okHttpClient = builder.build();
+        }
+        return okHttpClient;
     }
 
     public ShutDownMsg shutDownMsg() {

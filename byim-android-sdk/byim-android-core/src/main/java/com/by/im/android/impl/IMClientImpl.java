@@ -40,9 +40,10 @@ public class IMClientImpl implements IMClient {
 
     @Override
     public void login(long userId, String userName) throws Exception {
-        ServerResVO.ServerInfo serverInfo = userLogin(userId, userName);
-        startClient(serverInfo);
-        userLogin();
+        ServerResVO.ServerInfo cimServer = userLogin(userId, userName);
+        startClient(cimServer);
+        clientInfo.saveServiceInfo(cimServer.getIp() + ":" + cimServer.getCimServerPort())
+                .saveUserInfo(userId, userName);
     }
 
     private ServerResVO.ServerInfo userLogin(long userId, String userName) throws Exception{
@@ -90,27 +91,6 @@ public class IMClientImpl implements IMClient {
             logger.info("启动 cim client 成功");
         }
         channel = (SocketChannel) future.channel();
-    }
-
-    /**
-     * 登录+路由服务器
-     *
-     * @return 路由服务器信息
-     * @throws Exception
-     */
-    private ServerResVO.ServerInfo userLogin() {
-        LoginReqVO loginReqVO = new LoginReqVO(userId, userName);
-        ServerResVO.ServerInfo cimServer = null;
-        try {
-            cimServer = routeRequest.getCIMServer(loginReqVO);
-
-            //保存系统信息
-            clientInfo.saveServiceInfo(cimServer.getIp() + ":" + cimServer.getCimServerPort())
-                    .saveUserInfo(userId, userName);
-        } catch (Exception e) {
-            logger.error("login fail", e);
-        }
-        return cimServer;
     }
 
     @Override
