@@ -1,6 +1,6 @@
 package com.by.im.android.impl.thread;
 
-import com.by.im.android.impl.IMClientConfig;
+import com.by.im.android.impl.BeanFactory;
 import com.by.im.common.kit.HeartBeatHandler;
 import io.netty.channel.ChannelHandlerContext;
 
@@ -10,7 +10,7 @@ public class ReConnectJob implements Runnable {
 
     public ReConnectJob(ChannelHandlerContext context) {
         this.context = context;
-        this.heartBeatHandler = IMClientConfig.getInstance().heartBeatHandler();
+        this.heartBeatHandler = BeanFactory.getInstance().heartBeatHandler();
     }
 
     @Override

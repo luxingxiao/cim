@@ -1,6 +1,7 @@
 package com.by.im.common.construct;
 
-import com.crossoverjie.cim.common.util.StringUtil;
+
+import com.by.im.common.util.StringUtil;
 
 import java.util.ArrayList;
 import java.util.List;

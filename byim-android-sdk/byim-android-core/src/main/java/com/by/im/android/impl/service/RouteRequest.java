@@ -1,10 +1,10 @@
 package com.by.im.android.impl.service;
 
-import com.crossoverjie.cim.client.vo.req.GroupReqVO;
-import com.crossoverjie.cim.client.vo.req.LoginReqVO;
-import com.crossoverjie.cim.client.vo.req.P2PReqVO;
-import com.crossoverjie.cim.client.vo.res.CIMServerResVO;
-import com.crossoverjie.cim.client.vo.res.OnlineUsersResVO;
+import com.by.im.android.vo.req.GroupReqVO;
+import com.by.im.android.vo.req.LoginReqVO;
+import com.by.im.android.vo.req.P2PReqVO;
+import com.by.im.android.vo.res.OnlineUsersResVO;
+import com.by.im.android.vo.res.ServerResVO;
 
 import java.util.List;
 
@@ -38,7 +38,7 @@ public interface RouteRequest {
      * @param loginReqVO
      * @throws Exception
      */
-    CIMServerResVO.ServerInfo getCIMServer(LoginReqVO loginReqVO) throws Exception;
+    ServerResVO.ServerInfo getCIMServer(LoginReqVO loginReqVO) throws Exception;
 
     /**
      * 获取所有在线用户
@@ -48,6 +48,6 @@ public interface RouteRequest {
     List<OnlineUsersResVO.DataBodyBean> onlineUsers()throws Exception ;
 
 
-    void offLine() ;
+    void offLine();
 
 }

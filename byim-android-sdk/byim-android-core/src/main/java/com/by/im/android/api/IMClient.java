@@ -1,9 +1,8 @@
 package com.by.im.android.api;
 
 
-import com.by.im.android.vo.req.LoginReqVO;
-
 public interface IMClient {
+
     /**
      * 客户端登录
      * @param userId 用户id
@@ -15,9 +14,9 @@ public interface IMClient {
     /**
      * 向特定的用户发送文本消息
      * @param msg 文本消息内容
-     * @param userId
+     * @param toUser 消息发送目标用户Id
      */
-    void sendStringMsg(StringMsgType type, String msg, long userId);
+    void sendStringMsg(long toUser, StringMsgType type, String msg);
 
     /**
      * 客戶端
@@ -37,9 +36,16 @@ public interface IMClient {
      */
     ClientInfo getClientInfo() throws IllegalStateException;
 
-    /**
-     * 单例模式
-     * @return 获取单例客户端
-     */
-    IMClient getInstance();
+    Logger getLogger();
+
+    void setLogger(Logger logger);
+
+    IMClientConfig getConfig();
+
+    void setConfig(IMClientConfig config);
+
+    MsgCallBackListener getMsgCallBackListener();
+
+    void setMsgCallBackListener(MsgCallBackListener msgCallBackListener);
+
 }

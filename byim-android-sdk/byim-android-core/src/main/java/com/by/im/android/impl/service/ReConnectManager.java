@@ -1,23 +1,14 @@
 package com.by.im.android.impl.service;
 
-import com.crossoverjie.cim.client.thread.ReConnectJob;
+import com.by.im.android.impl.thread.ReConnectJob;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import io.netty.channel.ChannelHandlerContext;
-import org.springframework.stereotype.Component;
 
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
-/**
- * Function:
- *
- * @author crossoverJie
- * Date: 2020-04-15 00:26
- * @since JDK 1.8
- */
-@Component
 public final class ReConnectManager {
 
     private ScheduledExecutorService scheduledExecutorService;
