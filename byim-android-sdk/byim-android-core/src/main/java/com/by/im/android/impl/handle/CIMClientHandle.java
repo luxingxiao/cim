@@ -94,8 +94,9 @@ public class CIMClientHandle extends SimpleChannelInboundHandler<CIMResponseProt
 
         if (msg.getType() != Constants.CommandType.PING) {
             //回调消息
+            long userId = msg.getResponseId();
             String msgString = msg.getResMsg();
-            IMClientFactory.getIMClient().getMsgCallBackListener().handle(msgString);
+            IMClientFactory.getIMClient().getMsgCallBackListener().handle(userId, msgString);
         }
     }
 

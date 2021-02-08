@@ -1,5 +1,6 @@
 package com.by.im.android.impl;
 
+import com.by.im.android.api.IMClientFactory;
 import com.by.im.android.api.Logger;
 import com.by.im.android.impl.service.ReConnectManager;
 import com.by.im.android.impl.service.RouteRequest;
@@ -66,7 +67,9 @@ public class BeanFactory {
 
     }
 
-    public ThreadPoolExecutor threadPoolExecutor(int queueSize, int poolSize) {
+    public ThreadPoolExecutor threadPoolExecutor() {
+        int queueSize = IMClientFactory.getIMClient().getConfig().getCallBackThreadPoolQueueSize();
+        int poolSize = IMClientFactory.getIMClient().getConfig().getCallBackThreadPoolSize();
         if (threadPoolExecutor == null) {
             BlockingQueue<Runnable> queue = new LinkedBlockingQueue(queueSize);
             ThreadFactory product = new ThreadFactoryBuilder()

@@ -24,7 +24,6 @@ public interface IMClient {
      */
     void reconnect() throws Exception;
 
-
     /**
      * 关闭客户端
      */
