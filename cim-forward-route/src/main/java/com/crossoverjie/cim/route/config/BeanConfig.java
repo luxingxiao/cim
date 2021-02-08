@@ -5,6 +5,7 @@ import com.crossoverjie.cim.common.route.algorithm.consistenthash.AbstractConsis
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import okhttp3.ConnectionPool;
 import okhttp3.OkHttpClient;
 import org.I0Itec.zkclient.ZkClient;
 import org.slf4j.Logger;
@@ -79,10 +80,11 @@ public class BeanConfig {
     @Bean
     public OkHttpClient okHttpClient() {
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
+        ConnectionPool connectionPool = new ConnectionPool(5, 5, TimeUnit.SECONDS);
         builder.connectTimeout(5, TimeUnit.MINUTES)
                 .readTimeout(5, TimeUnit.MINUTES)
                 .writeTimeout(5, TimeUnit.MINUTES)
-                .retryOnConnectionFailure(true);
+                .retryOnConnectionFailure(true).connectionPool(connectionPool);
         OkHttpClient okHttpClient =  builder.build();
         okHttpClient.dispatcher().setMaxRequestsPerHost(1000000);
         okHttpClient.dispatcher().setMaxRequests(1000000);
