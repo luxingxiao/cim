@@ -15,7 +15,7 @@
     <dependencies>
         <dependency>
             <groupId>com.crossoverjie.netty</groupId>
-            <artifactId>cim-com.by.im.common.req.common</artifactId>
+            <artifactId>cim-common</artifactId>
             <exclusions>
                 <exclusion>
                     <artifactId>log4j</artifactId>
