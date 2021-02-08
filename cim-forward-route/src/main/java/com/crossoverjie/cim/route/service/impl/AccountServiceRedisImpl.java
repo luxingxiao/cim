@@ -1,5 +1,6 @@
 package com.crossoverjie.cim.route.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.crossoverjie.cim.common.core.proxy.ProxyManager;
 import com.crossoverjie.cim.common.enums.StatusEnum;
 import com.crossoverjie.cim.common.exception.CIMException;
@@ -13,8 +14,7 @@ import com.crossoverjie.cim.route.service.AccountService;
 import com.crossoverjie.cim.route.service.UserInfoCacheService;
 import com.crossoverjie.cim.server.api.ServerApi;
 import com.crossoverjie.cim.server.api.vo.req.SendMsgReqVO;
-import okhttp3.OkHttpClient;
-import okhttp3.Response;
+import okhttp3.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -152,17 +152,35 @@ public class AccountServiceRedisImpl implements AccountService {
     public void pushMsg(CIMServerResVO cimServerResVO, long sendUserId, ChatReqVO groupReqVO) throws Exception {
         CIMUserInfo cimUserInfo = userInfoCacheService.loadUserInfoByUserId(sendUserId);
 
-        String url = "http://" + cimServerResVO.getIp() + ":" + cimServerResVO.getHttpPort();
-        ServerApi serverApi = new ProxyManager<>(ServerApi.class, url, okHttpClient).getInstance();
-        SendMsgReqVO vo = new SendMsgReqVO(cimUserInfo.getUserName() + ":" + groupReqVO.getMsg(), groupReqVO.getUserId());
-        Response response = null;
-        try {
-            response = (Response) serverApi.sendMsg(vo);
-        } catch (Exception e) {
-            LOGGER.error("Exception", e);
-        } finally {
-            response.body().close();
-        }
+        String url = "http://" + cimServerResVO.getIp() + ":" + cimServerResVO.getHttpPort() + "/sendMsg";
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("userId", groupReqVO.getUserId());
+        jsonObject.put("msg", cimUserInfo.getUserName() + ":" + groupReqVO.getMsg());
+
+        MediaType mediaType = MediaType.parse("application/json");
+        RequestBody requestBody = RequestBody.create(mediaType, jsonObject.toString());
+
+        Request request = new Request.Builder().url(url).post(requestBody).build();
+        Call call = okHttpClient.newCall(request);
+        call.enqueue(new Callback() {
+                         @Override
+                         public void onFailure(Call call, IOException e) {
+
+                         }
+
+                         @Override
+                         public void onResponse(Call call, Response response) throws IOException {
+
+                             try {
+                                 LOGGER.info(response.body().toString());
+                             } catch (Exception e) {
+                                 LOGGER.error("Exception", e);
+                             } finally {
+                                 response.body().close();
+                             }
+                         }
+                     }
+        );
     }
 
     @Override

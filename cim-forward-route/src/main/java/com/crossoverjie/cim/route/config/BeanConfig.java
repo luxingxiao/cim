@@ -84,8 +84,8 @@ public class BeanConfig {
                 .writeTimeout(5, TimeUnit.MINUTES)
                 .retryOnConnectionFailure(true);
         OkHttpClient okHttpClient =  builder.build();
-        okHttpClient.dispatcher().setMaxRequestsPerHost(10000);
-        okHttpClient.dispatcher().setMaxRequests(10000);
+        okHttpClient.dispatcher().setMaxRequestsPerHost(1000000);
+        okHttpClient.dispatcher().setMaxRequests(1000000);
         return okHttpClient;
     }
 
