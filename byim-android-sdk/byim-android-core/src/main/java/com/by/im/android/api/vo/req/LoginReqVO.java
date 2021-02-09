@@ -1,4 +1,4 @@
-package com.by.im.android.vo.req;
+package com.by.im.android.api.vo.req;
 
 import com.by.im.common.req.BaseRequest;
 /**

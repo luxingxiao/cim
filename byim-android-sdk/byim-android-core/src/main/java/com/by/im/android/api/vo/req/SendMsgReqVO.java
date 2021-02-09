@@ -1,4 +1,4 @@
-package com.by.im.android.vo.req;
+package com.by.im.android.api.vo.req;
 
 import com.by.im.common.req.BaseRequest;
 /**
@@ -8,9 +8,11 @@ import com.by.im.common.req.BaseRequest;
  *         Date: 2018/05/21 15:56
  * @since JDK 1.8
  */
-public class StringReqVO extends BaseRequest {
+public class SendMsgReqVO extends BaseRequest {
 
     private String msg ;
+
+    private Long userId ;
 
     public String getMsg() {
         return msg;
@@ -18,5 +20,13 @@ public class StringReqVO extends BaseRequest {
 
     public void setMsg(String msg) {
         this.msg = msg;
+    }
+
+    public long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(long userId) {
+        this.userId = userId;
     }
 }

@@ -1,4 +1,4 @@
-package com.by.im.android.vo.res;
+package com.by.im.android.api.vo.res;
 
 import java.util.List;
 

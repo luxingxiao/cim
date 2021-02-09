@@ -1,24 +1,35 @@
-package com.by.im.android.vo.req;
+package com.by.im.android.api.vo.req;
 
 import com.by.im.common.req.BaseRequest;
 
 /**
- * Function: 群发请求
+ * Function: 单聊请求
  *
  * @author crossoverJie
  *         Date: 2018/05/21 15:56
  * @since JDK 1.8
  */
-public class GroupReqVO extends BaseRequest {
+public class P2PReqVO extends BaseRequest {
 
     private Long userId ;
-
-
+    private Long receiveUserId ;
     private String msg ;
 
-    public GroupReqVO(Long userId, String msg) {
+    public P2PReqVO() {
+    }
+
+    public P2PReqVO(Long userId, Long receiveUserId, String msg) {
         this.userId = userId;
+        this.receiveUserId = receiveUserId;
         this.msg = msg;
+    }
+
+    public Long getReceiveUserId() {
+        return receiveUserId;
+    }
+
+    public void setReceiveUserId(Long receiveUserId) {
+        this.receiveUserId = receiveUserId;
     }
 
     public String getMsg() {

@@ -1,10 +1,10 @@
 package com.by.im.android.impl.service;
 
-import com.by.im.android.vo.req.GroupReqVO;
-import com.by.im.android.vo.req.LoginReqVO;
-import com.by.im.android.vo.req.P2PReqVO;
-import com.by.im.android.vo.res.OnlineUsersResVO;
-import com.by.im.android.vo.res.ServerResVO;
+import com.by.im.android.api.vo.req.GroupReqVO;
+import com.by.im.android.api.vo.req.LoginReqVO;
+import com.by.im.android.api.vo.req.P2PReqVO;
+import com.by.im.android.api.vo.res.OnlineUsersResVO;
+import com.by.im.android.api.vo.res.ServerResVO;
 
 import java.util.List;
 
