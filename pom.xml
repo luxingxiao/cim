@@ -33,7 +33,6 @@
 		<module>cim-forward-route</module>
         <module>cim-rout-api</module>
         <module>cim-server-api</module>
-		<module>byim-android-sdk</module>
 	</modules>
 
 
