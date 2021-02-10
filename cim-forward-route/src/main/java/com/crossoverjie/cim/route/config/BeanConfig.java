@@ -81,11 +81,10 @@ public class BeanConfig {
     @Bean
     public OkHttpClient okHttpClient() {
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
-        ConnectionPool connectionPool = new ConnectionPool(5, 5, TimeUnit.SECONDS);
         builder.connectTimeout(5, TimeUnit.MINUTES)
                 .readTimeout(5, TimeUnit.MINUTES)
                 .writeTimeout(5, TimeUnit.MINUTES)
-                .retryOnConnectionFailure(true).connectionPool(connectionPool);
+                .retryOnConnectionFailure(true);
         OkHttpClient okHttpClient =  builder.build();
         okHttpClient.dispatcher().setMaxRequestsPerHost(1000000);
         okHttpClient.dispatcher().setMaxRequests(1000000);
