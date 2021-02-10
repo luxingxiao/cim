@@ -24,7 +24,7 @@ public final class HttpClient {
 
         Request request = new Request.Builder()
                 .url(url)
-                .header("Connection", "close")
+                .header("Connection", "keep-alive")
                 .post(requestBody)
                 .build();
 
