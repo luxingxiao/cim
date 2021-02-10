@@ -785,7 +785,7 @@ public final class CIMRequestProto {
       "\n\026BaseRequestProto.proto\022\010protocol\"A\n\016CI" +
       "MReqProtocol\022\021\n\trequestId\030\002 \002(\003\022\016\n\006reqMs" +
       "g\030\001 \002(\t\022\014\n\004type\030\003 \002(\005B7\n$com.crossoverji" +
-      "e.cim.com.by.im.common.req.common.protocolB\017CIMRequestProto"
+      "e.cim.common.protocolB\017CIMRequestProto"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {

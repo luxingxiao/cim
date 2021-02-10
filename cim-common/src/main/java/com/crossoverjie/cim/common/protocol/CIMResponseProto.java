@@ -785,7 +785,7 @@ public final class CIMResponseProto {
       "\n\027BaseResponseProto.proto\022\010protocol\"B\n\016C" +
       "IMResProtocol\022\022\n\nresponseId\030\002 \002(\003\022\016\n\006res" +
       "Msg\030\001 \002(\t\022\014\n\004type\030\003 \002(\005B8\n$com.crossover" +
-      "jie.cim.com.by.im.common.req.common.protocolB\020CIMResponseProt" +
+      "jie.cim.common.protocolB\020CIMResponseProt" +
       "o"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
