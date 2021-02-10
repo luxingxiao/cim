@@ -160,7 +160,7 @@ public class AccountServiceRedisImpl implements AccountService {
         MediaType mediaType = MediaType.parse("application/json");
         RequestBody requestBody = RequestBody.create(mediaType, jsonObject.toString());
 
-        Request request = new Request.Builder().url(url).post(requestBody).build();
+        Request request = new Request.Builder().url(url).header("Connection", "close").post(requestBody).build();
         Call call = okHttpClient.newCall(request);
         call.enqueue(new Callback() {
                          @Override
