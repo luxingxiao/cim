@@ -39,7 +39,7 @@ public interface AccountService {
      * @param loginReqVO 用户信息
      * @throws Exception
      */
-    void saveRouteInfo(LoginReqVO loginReqVO ,String msg) throws Exception ;
+    void saveRouteInfo(LoginReqVO loginReqVO ,String msg, String topic) throws Exception ;
 
     /**
      * 加载所有用户的路有关系
@@ -54,6 +54,13 @@ public interface AccountService {
      */
     CIMServerResVO loadRouteRelatedByUserId(Long userId) ;
 
+    /**
+     * 通过用户ID获取MQ Topic
+     * @param userId
+     * @return
+     */
+    String loadRouteTopicByUserId(Long userId);
+
 
     /**
      * 推送消息
@@ -63,6 +70,12 @@ public interface AccountService {
      * @throws Exception
      */
     void pushMsg(CIMServerResVO cimServerResVO, long sendUserId , ChatReqVO groupReqVO) throws Exception;
+
+    /**
+     * 通过MQ推送消息
+     */
+
+    void pushMsg(String topic, long sendUserId, ChatReqVO chatReqVO);
 
     /**
      * 用户下线

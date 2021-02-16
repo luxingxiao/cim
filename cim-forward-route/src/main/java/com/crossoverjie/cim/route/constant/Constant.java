@@ -25,5 +25,8 @@ public final class Constant {
      */
     public final static String LOGIN_STATUS_PREFIX = "login-status";
 
-
+    /**
+     * Topic路由信息前綴
+     */
+    public final static String TOPIC_ROUTE_PREFIX = "topic-route";
 }

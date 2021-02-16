@@ -1,6 +1,5 @@
 package com.crossoverjie.cim.route.service.impl;
 
-import com.alibaba.fastjson.JSONObject;
 import com.crossoverjie.cim.common.core.proxy.ProxyManager;
 import com.crossoverjie.cim.common.enums.StatusEnum;
 import com.crossoverjie.cim.common.exception.CIMException;
@@ -14,7 +13,11 @@ import com.crossoverjie.cim.route.service.AccountService;
 import com.crossoverjie.cim.route.service.UserInfoCacheService;
 import com.crossoverjie.cim.server.api.ServerApi;
 import com.crossoverjie.cim.server.api.vo.req.SendMsgReqVO;
-import okhttp3.*;
+import okhttp3.OkHttpClient;
+import okhttp3.Response;
+import org.apache.rocketmq.client.producer.SendCallback;
+import org.apache.rocketmq.client.producer.SendResult;
+import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,15 +33,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.crossoverjie.cim.common.enums.StatusEnum.OFF_LINE;
-import static com.crossoverjie.cim.route.constant.Constant.ACCOUNT_PREFIX;
-import static com.crossoverjie.cim.route.constant.Constant.ROUTE_PREFIX;
+import static com.crossoverjie.cim.route.constant.Constant.*;
 
 /**
- * Function:
- *
- * @author crossoverJie
- * Date: 2018/12/23 21:58
- * @since JDK 1.8
+ * @author luxingxiao
  */
 @Service
 public class AccountServiceRedisImpl implements AccountService {
@@ -52,6 +50,9 @@ public class AccountServiceRedisImpl implements AccountService {
 
     @Autowired
     private OkHttpClient okHttpClient;
+
+    @Autowired
+    private RocketMQTemplate rocketMQTemplate;
 
     @Override
     public RegisterInfoResVO register(RegisterInfoResVO info) {
@@ -95,16 +96,17 @@ public class AccountServiceRedisImpl implements AccountService {
     }
 
     @Override
-    public void saveRouteInfo(LoginReqVO loginReqVO, String msg) throws Exception {
+    public void saveRouteInfo(LoginReqVO loginReqVO, String msg, String topic) throws Exception {
         String key = ROUTE_PREFIX + loginReqVO.getUserId();
         redisTemplate.opsForValue().set(key, msg);
+        String topicKey = TOPIC_ROUTE_PREFIX + loginReqVO.getUserId();
+        redisTemplate.opsForValue().set(topicKey, topic);
     }
 
     @Override
     public Map<Long, CIMServerResVO> loadRouteRelated() {
 
         Map<Long, CIMServerResVO> routes = new HashMap<>(64);
-
 
         RedisConnection connection = redisTemplate.getConnectionFactory().getConnection();
         ScanOptions options = ScanOptions.scanOptions()
@@ -140,6 +142,11 @@ public class AccountServiceRedisImpl implements AccountService {
         return cimServerResVO;
     }
 
+    @Override
+    public String loadRouteTopicByUserId(Long userId) {
+        return redisTemplate.opsForValue().get(TOPIC_ROUTE_PREFIX + userId);
+    }
+
     private void parseServerInfo(Map<Long, CIMServerResVO> routes, String key) {
         long userId = Long.valueOf(key.split(":")[1]);
         String value = redisTemplate.opsForValue().get(key);
@@ -166,12 +173,32 @@ public class AccountServiceRedisImpl implements AccountService {
     }
 
     @Override
+    public void pushMsg(String topic, long sendUserId, ChatReqVO chatReqVO) {
+        CIMUserInfo cimUserInfo = userInfoCacheService.loadUserInfoByUserId(sendUserId);
+        SendMsgReqVO vo = new SendMsgReqVO(cimUserInfo.getUserName() + ":" + chatReqVO.getMsg(), chatReqVO.getUserId());
+        rocketMQTemplate.asyncSend(topic, vo, new SendCallback() {
+            @Override
+            public void onSuccess(SendResult sendResult) {
+
+            }
+
+            @Override
+            public void onException(Throwable throwable) {
+                LOGGER.error("消息推送失败", throwable);
+            }
+        });
+    }
+
+    @Override
     public void offLine(Long userId) throws Exception {
 
         // TODO: 2019-01-21 改为一个原子命令，以防数据一致性
 
         //删除路由
         redisTemplate.delete(ROUTE_PREFIX + userId);
+
+        //删除topic路由
+        redisTemplate.delete(TOPIC_ROUTE_PREFIX + userId);
 
         //删除登录状态
         userInfoCacheService.removeLoginStatus(userId);
