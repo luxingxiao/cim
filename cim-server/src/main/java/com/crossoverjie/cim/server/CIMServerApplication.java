@@ -26,7 +26,7 @@ public class CIMServerApplication implements CommandLineRunner {
     @Value("${server.port}")
     private int httpPort;
 
-    @Value("im.message.topic")
+    @Value("${im.message.topic}")
     private String topic;
 
     public static void main(String[] args) {
