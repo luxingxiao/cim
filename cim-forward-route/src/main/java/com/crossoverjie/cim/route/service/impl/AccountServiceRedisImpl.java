@@ -176,17 +176,22 @@ public class AccountServiceRedisImpl implements AccountService {
     public void pushMsg(String topic, long sendUserId, ChatReqVO chatReqVO) {
         CIMUserInfo cimUserInfo = userInfoCacheService.loadUserInfoByUserId(sendUserId);
         SendMsgReqVO vo = new SendMsgReqVO(cimUserInfo.getUserName() + ":" + chatReqVO.getMsg(), chatReqVO.getUserId());
-        rocketMQTemplate.asyncSend(topic, vo, new SendCallback() {
-            @Override
-            public void onSuccess(SendResult sendResult) {
+        if(topic == null){
+            LOGGER.warn("用戶 {} 不在线", chatReqVO.getUserId());
+            //TODO 处理离线消息
+        }else {
+            rocketMQTemplate.asyncSend(topic, vo, new SendCallback() {
+                @Override
+                public void onSuccess(SendResult sendResult) {
 
-            }
+                }
 
-            @Override
-            public void onException(Throwable throwable) {
-                LOGGER.error("消息推送失败", throwable);
-            }
-        });
+                @Override
+                public void onException(Throwable throwable) {
+                    LOGGER.error("消息推送失败", throwable);
+                }
+            });
+        }
     }
 
     @Override
