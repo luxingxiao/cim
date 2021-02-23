@@ -109,6 +109,8 @@ public class CIMClientHandle extends SimpleChannelInboundHandler<CIMResponseProt
         }
 
         if (msg.getType() != Constants.CommandType.PING) {
+
+            System.out.println("client 打印 timestamp"+msg.getTimeStamp());
             //回调消息
             callBackMsg(msg.getResMsg());
 

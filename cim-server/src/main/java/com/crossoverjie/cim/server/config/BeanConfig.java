@@ -56,6 +56,7 @@ public class BeanConfig {
                 .setRequestId(0L)
                 .setReqMsg("pong")
                 .setType(Constants.CommandType.PING)
+                .setTimeStamp(System.currentTimeMillis())
                 .build();
         return heart;
     }

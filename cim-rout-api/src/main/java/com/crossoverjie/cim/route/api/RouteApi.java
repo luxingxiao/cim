@@ -1,11 +1,10 @@
 package com.crossoverjie.cim.route.api;
 
 import com.crossoverjie.cim.common.res.BaseResponse;
-import com.crossoverjie.cim.route.api.vo.req.ChatReqVO;
-import com.crossoverjie.cim.route.api.vo.req.LoginReqVO;
-import com.crossoverjie.cim.route.api.vo.req.P2PReqVO;
-import com.crossoverjie.cim.route.api.vo.req.RegisterInfoReqVO;
+import com.crossoverjie.cim.route.api.vo.req.*;
+import com.crossoverjie.cim.route.api.vo.res.ChatMsgCacheResVO;
 import com.crossoverjie.cim.route.api.vo.res.RegisterInfoResVO;
+import org.springframework.web.bind.annotation.RequestBody;
 
 /**
  * Function: Route Api
@@ -67,4 +66,12 @@ public interface RouteApi {
      * @throws Exception
      */
     Object onlineUser() throws Exception;
+
+    /**
+     * search P2P History Msg
+     * @param searchMsgReqVO
+     * @return
+     * @throws Exception
+     */
+    Object searchP2PHistoryMsg(SearchMsgReqVO searchMsgReqVO) throws Exception;
 }

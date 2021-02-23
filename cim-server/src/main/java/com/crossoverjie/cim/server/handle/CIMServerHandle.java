@@ -8,6 +8,7 @@ import com.crossoverjie.cim.common.protocol.CIMRequestProto;
 import com.crossoverjie.cim.common.util.NettyAttrUtil;
 import com.crossoverjie.cim.server.kit.RouteHandler;
 import com.crossoverjie.cim.server.kit.ServerHeartBeatHandlerImpl;
+import com.crossoverjie.cim.server.server.CIMServer;
 import com.crossoverjie.cim.server.util.SessionSocketHolder;
 import com.crossoverjie.cim.server.util.SpringBeanFactory;
 import io.netty.channel.ChannelFutureListener;
@@ -19,6 +20,8 @@ import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  * Function:
@@ -80,6 +83,11 @@ public class CIMServerHandle extends SimpleChannelInboundHandler<CIMRequestProto
             SessionSocketHolder.put(msg.getRequestId(), (NioSocketChannel) ctx.channel());
             SessionSocketHolder.saveSession(msg.getRequestId(), msg.getReqMsg());
             LOGGER.info("client [{}] online success!!", msg.getReqMsg());
+            //查找离线消息，并发送
+//            System.out.println("channelRead0中的RequestId+++++"+msg.getRequestId());
+//            System.out.println("channelRead0中的timestamp+++++"+msg.getTimeStamp());
+            CIMServer cimServer = SpringBeanFactory.getBean(CIMServer.class);
+            cimServer.sendOfflineMsg(msg.getRequestId());
         }
 
         //心跳更新时间
