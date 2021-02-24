@@ -118,48 +118,56 @@ public class CIMServer {
      * @param receiveUserId
      */
     public void sendOfflineMsg(Long receiveUserId){
-//        System.out.println("server 打印离线消息当前receiveUserId++"+receiveUserId);
         String todayDate = this.getTodayDate();
         String key = "receive_"+todayDate+"_"+receiveUserId;
-        String values = redisTemplate.opsForValue().get(key);
-//        System.out.println("server 打印离线消息当前receiveUserId存的消息++"+values);
-        if (StringUtil.isEmpty(values)){
+        List<Object> objectList = redisTemplate.opsForHash().values(key);
+//        System.out.println("用户"+receiveUserId+"的离线消息为："+objectList);
+        if (null == objectList || objectList.isEmpty()){
             LOGGER.info("用户id:[{}]无离线消息",receiveUserId);
             return;
         }
-        List<ChatMsgCache> list = JSON.parseArray(values,ChatMsgCache.class);
-        Iterator<ChatMsgCache> iterator = list.iterator();
-        while (iterator.hasNext()){
-            ChatMsgCache chatMsgCache = iterator.next();
-            NioSocketChannel socketChannel = SessionSocketHolder.get(receiveUserId);
-            //客户端在线
-            if (null != socketChannel){
-                CIMRequestProto.CIMReqProtocol protocol = CIMRequestProto.CIMReqProtocol.newBuilder()
-                        .setRequestId(receiveUserId)
-                        .setReqMsg(chatMsgCache.getSendUserName() + ":" + chatMsgCache.getMsg())
-                        .setType(Constants.CommandType.MSG)
-                        .setTimeStamp(chatMsgCache.getTimeStamp())
-                        .build();
-
-                ChannelFuture future = socketChannel.writeAndFlush(protocol);
-                future.addListener(new ChannelFutureListener() {
-                    @Override
-                    public void operationComplete(ChannelFuture channelFuture) throws Exception {
-                        LOGGER.info("server push msg:[{}]", chatMsgCache.toString());
-                        iterator.remove();
-                    }
-                });
+        for (Object o : objectList) {
+            String values = (String) o;
+            if (StringUtil.isEmpty(values)){
+                continue;
             }
+            List<ChatMsgCache> list = JSON.parseArray(values,ChatMsgCache.class);
+            String hashKey = list.get(0).getSendUserId().toString();
+            Iterator<ChatMsgCache> iterator = list.iterator();
+            while (iterator.hasNext()){
+                ChatMsgCache chatMsgCache = iterator.next();
+                NioSocketChannel socketChannel = SessionSocketHolder.get(receiveUserId);
+                //客户端在线
+                if (null != socketChannel){
+                    CIMRequestProto.CIMReqProtocol protocol = CIMRequestProto.CIMReqProtocol.newBuilder()
+                            .setRequestId(receiveUserId)
+                            .setReqMsg(chatMsgCache.getSendUserName() + ":" + chatMsgCache.getMsg())
+                            .setType(Constants.CommandType.MSG)
+                            .setTimeStamp(chatMsgCache.getTimeStamp())
+                            .build();
 
+                    ChannelFuture future = socketChannel.writeAndFlush(protocol);
+                    future.addListener(new ChannelFutureListener() {
+                        @Override
+                        public void operationComplete(ChannelFuture channelFuture) throws Exception {
+                            LOGGER.info("server push offline msg:[{}]", chatMsgCache.toString());
+                            iterator.remove();
+                        }
+                    });
+                }
+            }
+            if (list.size() <= 0){
+                //离线消息均发送成功，删除离线缓存消息
+                LOGGER.info("删除离线缓存消息key[{}],hashKey[{}]",key,hashKey);
+                redisTemplate.opsForHash().delete(key,hashKey);
+            }else {
+                //离线消息部分未发送成功
+                redisTemplate.opsForHash().put(key,list.get(0).getSendUserId().toString(),JSON.toJSONString(list));
+                redisTemplate.expire(key,3,TimeUnit.DAYS);
+                LOGGER.info("重新保存用户id[{}]未接收成功的离线消息[{}]",receiveUserId,list);
+            }
         }
-        if (list.size() <= 0){
-            //离线消息均发送成功，删除离线缓存消息
-            redisTemplate.delete(key);
-        }else {
-            redisTemplate.opsForValue().set(key,JSON.toJSONString(list),3, TimeUnit.DAYS);
-            LOGGER.info("用户id[{}]未接收成功的离线消息[{}]",receiveUserId,list);
-        }
-//        System.out.println("打印出删除离线消息后的缓存"+redisTemplate.opsForValue().get(key));
+
 
     }
 

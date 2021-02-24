@@ -191,7 +191,7 @@ public class AccountServiceRedisImpl implements AccountService {
         CIMUserInfo cimUserInfo = userInfoCacheService.loadUserInfoByUserId(p2pRequest.getUserId());
         String todayDate = getTodayDate();
         String key = "receive_"+todayDate+"_"+p2pRequest.getReceiveUserId();
-        String values = redisTemplate.opsForValue().get(key);
+        String values = (String)redisTemplate.opsForHash().get(key,p2pRequest.getUserId().toString());
         List<ChatMsgCache> list = new ArrayList<>();
         ChatMsgCache chatMsgCache = new ChatMsgCache(p2pRequest.getUserId(),p2pRequest.getReceiveUserId(),p2pRequest.getMsg(),cimUserInfo.getUserName(),System.currentTimeMillis());
         if (StringUtil.isEmpty(values)){
@@ -200,7 +200,8 @@ public class AccountServiceRedisImpl implements AccountService {
             list = JSON.parseArray(values,ChatMsgCache.class);
             list.add(chatMsgCache);
         }
-        redisTemplate.opsForValue().set(key, JSON.toJSONString(list),3,TimeUnit.DAYS);
+        redisTemplate.opsForHash().put(key,p2pRequest.getUserId().toString(),JSON.toJSONString(list));
+        redisTemplate.expire(key,3,TimeUnit.DAYS);
         LOGGER.info("receiveCacheChatMsg缓存离线消息key:[{}],value增加:[{}]",key,chatMsgCache.toString());
     }
 

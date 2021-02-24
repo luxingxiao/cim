@@ -84,8 +84,6 @@ public class CIMServerHandle extends SimpleChannelInboundHandler<CIMRequestProto
             SessionSocketHolder.saveSession(msg.getRequestId(), msg.getReqMsg());
             LOGGER.info("client [{}] online success!!", msg.getReqMsg());
             //查找离线消息，并发送
-//            System.out.println("channelRead0中的RequestId+++++"+msg.getRequestId());
-//            System.out.println("channelRead0中的timestamp+++++"+msg.getTimeStamp());
             CIMServer cimServer = SpringBeanFactory.getBean(CIMServer.class);
             cimServer.sendOfflineMsg(msg.getRequestId());
         }

@@ -18,6 +18,8 @@ import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.DependsOn;
+import org.springframework.stereotype.Component;
 
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -29,6 +31,8 @@ import java.util.concurrent.ThreadPoolExecutor;
  *         Date: 16/02/2018 18:09
  * @since JDK 1.8
  */
+@Component
+@DependsOn("springBeanFactory")
 @ChannelHandler.Sharable
 public class CIMClientHandle extends SimpleChannelInboundHandler<CIMResponseProto.CIMResProtocol> {
 
@@ -110,7 +114,6 @@ public class CIMClientHandle extends SimpleChannelInboundHandler<CIMResponseProt
 
         if (msg.getType() != Constants.CommandType.PING) {
 
-            System.out.println("client 打印 timestamp"+msg.getTimeStamp());
             //回调消息
             callBackMsg(msg.getResMsg());
 
