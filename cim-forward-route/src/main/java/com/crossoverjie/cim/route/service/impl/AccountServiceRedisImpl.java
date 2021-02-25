@@ -225,8 +225,7 @@ public class AccountServiceRedisImpl implements AccountService {
     public void receiveCacheChatMsg(P2PReqVO p2pRequest) {
 
         CIMUserInfo cimUserInfo = userInfoCacheService.loadUserInfoByUserId(p2pRequest.getUserId());
-        String todayDate = getTodayDate();
-        String key = "receive_"+todayDate+"_"+p2pRequest.getReceiveUserId();
+        String key = RECEIVE_CACHE_PREFIX + p2pRequest.getReceiveUserId();
         String values = (String)redisTemplate.opsForHash().get(key,p2pRequest.getUserId().toString());
         List<ChatMsgCache> list = new ArrayList<>();
         ChatMsgCache chatMsgCache = new ChatMsgCache(p2pRequest.getUserId(),p2pRequest.getReceiveUserId(),p2pRequest.getMsg(),cimUserInfo.getUserName(),System.currentTimeMillis());

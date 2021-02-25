@@ -118,10 +118,8 @@ public class CIMServer {
      * @param receiveUserId
      */
     public void sendOfflineMsg(Long receiveUserId){
-        String todayDate = this.getTodayDate();
-        String key = "receive_"+todayDate+"_"+receiveUserId;
+        String key = "cim-receive-cache" + receiveUserId;
         List<Object> objectList = redisTemplate.opsForHash().values(key);
-//        System.out.println("用户"+receiveUserId+"的离线消息为："+objectList);
         if (null == objectList || objectList.isEmpty()){
 //            LOGGER.info("用户id:[{}]无离线消息",receiveUserId);
             return;

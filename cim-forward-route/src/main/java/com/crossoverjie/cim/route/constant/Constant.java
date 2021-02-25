@@ -29,4 +29,9 @@ public final class Constant {
      * Topic路由信息前綴
      */
     public final static String TOPIC_ROUTE_PREFIX = "topic-route";
+
+    /**
+     * 离线消息缓存前缀
+     */
+    public final static String RECEIVE_CACHE_PREFIX = "cim-receive-cache";
 }
