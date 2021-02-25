@@ -1,7 +1,10 @@
 package com.crossoverjie.cim.server.server;
 
+import com.alibaba.fastjson.JSON;
 import com.crossoverjie.cim.common.constant.Constants;
+import com.crossoverjie.cim.common.pojo.ChatMsgCache;
 import com.crossoverjie.cim.common.protocol.CIMRequestProto;
+import com.crossoverjie.cim.common.util.StringUtil;
 import com.crossoverjie.cim.server.api.vo.req.SendMsgReqVO;
 import com.crossoverjie.cim.server.init.CIMServerInitializer;
 import com.crossoverjie.cim.server.util.SessionSocketHolder;
@@ -15,12 +18,19 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.net.InetSocketAddress;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Function:
@@ -40,6 +50,9 @@ public class CIMServer {
 
     @Value("${cim.server.port}")
     private int nettyPort;
+
+    @Autowired
+    private RedisTemplate<String, String> redisTemplate;
 
 
     /**
@@ -92,10 +105,76 @@ public class CIMServer {
                 .setRequestId(sendMsgReqVO.getUserId())
                 .setReqMsg(sendMsgReqVO.getMsg())
                 .setType(Constants.CommandType.MSG)
+                .setTimeStamp(sendMsgReqVO.getSendMsgTime())
                 .build();
 
         ChannelFuture future = socketChannel.writeAndFlush(protocol);
         future.addListener((ChannelFutureListener) channelFuture ->
                 LOGGER.info("server push msg:[{}]", sendMsgReqVO.toString()));
     }
+
+    /**
+     * 发送离线消息
+     * @param receiveUserId
+     */
+    public void sendOfflineMsg(Long receiveUserId){
+        String todayDate = this.getTodayDate();
+        String key = "receive_"+todayDate+"_"+receiveUserId;
+        List<Object> objectList = redisTemplate.opsForHash().values(key);
+//        System.out.println("用户"+receiveUserId+"的离线消息为："+objectList);
+        if (null == objectList || objectList.isEmpty()){
+            LOGGER.info("用户id:[{}]无离线消息",receiveUserId);
+            return;
+        }
+        for (Object o : objectList) {
+            String values = (String) o;
+            if (StringUtil.isEmpty(values)){
+                continue;
+            }
+            List<ChatMsgCache> list = JSON.parseArray(values,ChatMsgCache.class);
+            String hashKey = list.get(0).getSendUserId().toString();
+            Iterator<ChatMsgCache> iterator = list.iterator();
+            while (iterator.hasNext()){
+                ChatMsgCache chatMsgCache = iterator.next();
+                NioSocketChannel socketChannel = SessionSocketHolder.get(receiveUserId);
+                //客户端在线
+                if (null != socketChannel){
+                    CIMRequestProto.CIMReqProtocol protocol = CIMRequestProto.CIMReqProtocol.newBuilder()
+                            .setRequestId(receiveUserId)
+                            .setReqMsg(chatMsgCache.getSendUserName() + ":" + chatMsgCache.getMsg())
+                            .setType(Constants.CommandType.MSG)
+                            .setTimeStamp(chatMsgCache.getTimeStamp())
+                            .build();
+
+                    ChannelFuture future = socketChannel.writeAndFlush(protocol);
+                    future.addListener(new ChannelFutureListener() {
+                        @Override
+                        public void operationComplete(ChannelFuture channelFuture) throws Exception {
+                            LOGGER.info("server push offline msg:[{}]", chatMsgCache.toString());
+                            iterator.remove();
+                        }
+                    });
+                }
+            }
+            if (list.size() <= 0){
+                //离线消息均发送成功，删除离线缓存消息
+                LOGGER.info("删除离线缓存消息key[{}],hashKey[{}]",key,hashKey);
+                redisTemplate.opsForHash().delete(key,hashKey);
+            }else {
+                //离线消息部分未发送成功
+                redisTemplate.opsForHash().put(key,list.get(0).getSendUserId().toString(),JSON.toJSONString(list));
+                redisTemplate.expire(key,3,TimeUnit.DAYS);
+                LOGGER.info("重新保存用户id[{}]未接收成功的离线消息[{}]",receiveUserId,list);
+            }
+        }
+
+
+    }
+
+    private String getTodayDate(){
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("YYYYMMdd");
+        return simpleDateFormat.format(new Date());
+    }
+
+
 }

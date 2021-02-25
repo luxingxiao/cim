@@ -22,6 +22,9 @@ public class SendMsgReqVO extends BaseRequest {
     @ApiModelProperty(required = true, value = "userId", example = "11")
     private Long userId ;
 
+    @ApiModelProperty(required = false, value = "sendMsgTime", example = "11")
+    private Long sendMsgTime ;
+
     public SendMsgReqVO() {
     }
 
@@ -46,11 +49,20 @@ public class SendMsgReqVO extends BaseRequest {
         this.userId = userId;
     }
 
+    public Long getSendMsgTime() {
+        return sendMsgTime;
+    }
+
+    public void setSendMsgTime(Long sendMsgTime) {
+        this.sendMsgTime = sendMsgTime;
+    }
+
     @Override
     public String toString() {
         return "SendMsgReqVO{" +
                 "msg='" + msg + '\'' +
                 ", userId=" + userId +
-                "} " + super.toString();
+                ", sendMsgTime=" + sendMsgTime +
+                '}';
     }
 }
