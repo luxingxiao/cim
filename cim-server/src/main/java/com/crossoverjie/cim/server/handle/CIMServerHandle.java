@@ -90,6 +90,9 @@ public class CIMServerHandle extends SimpleChannelInboundHandler<CIMRequestProto
 
         //心跳更新时间
         if (msg.getType() == Constants.CommandType.PING){
+            //查找离线消息，并发送
+            CIMServer cimServer = SpringBeanFactory.getBean(CIMServer.class);
+            cimServer.sendOfflineMsg(msg.getRequestId());
             NettyAttrUtil.updateReaderTime(ctx.channel(),System.currentTimeMillis());
             //向客户端响应 pong 消息
             CIMRequestProto.CIMReqProtocol heartBeat = SpringBeanFactory.getBean("heartBeat",

@@ -1,5 +1,6 @@
 package com.crossoverjie.cim.route.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.crossoverjie.cim.common.core.proxy.ProxyManager;
 import com.crossoverjie.cim.common.enums.StatusEnum;
@@ -141,8 +142,8 @@ public class AccountServiceRedisImpl implements AccountService {
         String value = redisTemplate.opsForValue().get(ROUTE_PREFIX + userId);
 
         if (value == null) {
-            return null;
-//            throw new CIMException(OFF_LINE);
+//            return null;
+            throw new CIMException(OFF_LINE);
         }
 
         CIMServerResVO cimServerResVO = new CIMServerResVO(RouteInfoParseUtil.parse(value));
@@ -185,6 +186,8 @@ public class AccountServiceRedisImpl implements AccountService {
     public void pushMsg(String topic, long sendUserId, ChatReqVO chatReqVO) {
         CIMUserInfo cimUserInfo = userInfoCacheService.loadUserInfoByUserId(sendUserId);
         SendMsgReqVO vo = new SendMsgReqVO(cimUserInfo.getUserName() + ":" + chatReqVO.getMsg(), chatReqVO.getUserId());
+        //先在route层设置消息发送时间,后期client层传入
+        vo.setSendMsgTime(System.currentTimeMillis());
         if(topic == null){
             LOGGER.warn("用戶 {} 不在线", chatReqVO.getUserId());
             //TODO 处理离线消息
@@ -235,7 +238,7 @@ public class AccountServiceRedisImpl implements AccountService {
         }
         redisTemplate.opsForHash().put(key,p2pRequest.getUserId().toString(),JSON.toJSONString(list));
         redisTemplate.expire(key,3,TimeUnit.DAYS);
-        LOGGER.info("receiveCacheChatMsg缓存离线消息key:[{}],value增加:[{}]",key,chatMsgCache.toString());
+        LOGGER.info("用户[{}]不在线，缓存离线消息key:[{}],value增加:[{}]",p2pRequest.getReceiveUserId(),key,chatMsgCache.toString());
     }
 
     @Override

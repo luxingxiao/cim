@@ -123,7 +123,7 @@ public class CIMServer {
         List<Object> objectList = redisTemplate.opsForHash().values(key);
 //        System.out.println("用户"+receiveUserId+"的离线消息为："+objectList);
         if (null == objectList || objectList.isEmpty()){
-            LOGGER.info("用户id:[{}]无离线消息",receiveUserId);
+//            LOGGER.info("用户id:[{}]无离线消息",receiveUserId);
             return;
         }
         for (Object o : objectList) {

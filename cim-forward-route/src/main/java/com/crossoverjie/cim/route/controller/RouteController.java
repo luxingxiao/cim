@@ -10,6 +10,7 @@ import com.crossoverjie.cim.common.res.BaseResponse;
 import com.crossoverjie.cim.common.res.NULLBody;
 import com.crossoverjie.cim.common.route.algorithm.RouteHandle;
 import com.crossoverjie.cim.common.util.RouteInfoParseUtil;
+import com.crossoverjie.cim.common.util.StringUtil;
 import com.crossoverjie.cim.route.api.RouteApi;
 import com.crossoverjie.cim.route.api.vo.req.*;
 import com.crossoverjie.cim.route.api.vo.res.CIMServerResVO;
@@ -109,7 +110,7 @@ public class RouteController implements RouteApi {
             //获取接收消息用户的路由信息
             String topic = accountService.loadRouteTopicByUserId(p2pRequest.getReceiveUserId());
 
-            if (null == cimServerResVO){
+            if (StringUtil.isEmpty(topic)){
                 //接收方不在线，将消息缓存
                 accountService.receiveCacheChatMsg(p2pRequest);
                 res.setCode(StatusEnum.SUCCESS.getCode());
@@ -124,6 +125,8 @@ public class RouteController implements RouteApi {
             res.setMessage(StatusEnum.SUCCESS.getMessage());
 
         } catch (CIMException e) {
+            //消息发送异常，将消息缓存
+            accountService.receiveCacheChatMsg(p2pRequest);
             res.setCode(e.getErrorCode());
             res.setMessage(e.getErrorMessage());
         }
