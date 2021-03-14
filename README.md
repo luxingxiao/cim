@@ -259,7 +259,7 @@ java -jar cim-client-1.0.0-SNAPSHOT.jar --server.port=8084 --cim.user.id=上方�
 ![](https://tva1.sinaimg.cn/large/006y8mN6ly1g7brppmokqg30gn07gafj.gif)
 
 ## 联系作者
-- [crossoverJie@gmail.com](mailto:crossoverJie@gmail.com)
+- [lu.xingxiao@gmail.com](mailto:lu.xingxiao@gmail.com)
 - 微信公众号
 
 ![](https://ws1.sinaimg.cn/large/006tKfTcly1ftmfdo6mhmj30760760t7.jpg)
