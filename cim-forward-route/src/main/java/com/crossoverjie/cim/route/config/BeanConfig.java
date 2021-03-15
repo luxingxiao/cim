@@ -5,6 +5,8 @@ import com.crossoverjie.cim.common.route.algorithm.consistenthash.AbstractConsis
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import okhttp3.ConnectionPool;
+import okhttp3.Dispatcher;
 import okhttp3.OkHttpClient;
 import org.I0Itec.zkclient.ZkClient;
 import org.slf4j.Logger;
@@ -18,6 +20,9 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 import java.lang.reflect.Method;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -76,11 +81,14 @@ public class BeanConfig {
     @Bean
     public OkHttpClient okHttpClient() {
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
-        builder.connectTimeout(30, TimeUnit.SECONDS)
-                .readTimeout(10, TimeUnit.SECONDS)
-                .writeTimeout(10, TimeUnit.SECONDS)
+        builder.connectTimeout(5, TimeUnit.MINUTES)
+                .readTimeout(5, TimeUnit.MINUTES)
+                .writeTimeout(5, TimeUnit.MINUTES)
                 .retryOnConnectionFailure(true);
-        return builder.build();
+        OkHttpClient okHttpClient =  builder.build();
+//        okHttpClient.dispatcher().setMaxRequestsPerHost(100);
+//        okHttpClient.dispatcher().setMaxRequests(100);
+        return okHttpClient;
     }
 
     @Bean

@@ -12,11 +12,13 @@ public final class RouteInfo {
     private String ip ;
     private Integer cimServerPort;
     private Integer httpPort;
+    private String topic;
 
-    public RouteInfo(String ip, Integer cimServerPort, Integer httpPort) {
+    public RouteInfo(String ip, Integer cimServerPort, Integer httpPort, String topic) {
         this.ip = ip;
         this.cimServerPort = cimServerPort;
         this.httpPort = httpPort;
+        this.topic = topic;
     }
 
     public String getIp() {
@@ -41,5 +43,13 @@ public final class RouteInfo {
 
     public void setHttpPort(Integer httpPort) {
         this.httpPort = httpPort;
+    }
+
+    public String getTopic() {
+        return topic;
+    }
+
+    public void setTopic(String topic) {
+        this.topic = topic;
     }
 }

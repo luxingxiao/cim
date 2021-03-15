@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
  * Function:
  *
  * @author crossoverJie
- *         Date: 2018/8/24 01:37
+ * Date: 2018/8/24 01:37
  * @since JDK 1.8
  */
 public class RegistryZK implements Runnable {
@@ -18,18 +18,20 @@ public class RegistryZK implements Runnable {
 
     private ZKit zKit;
 
-    private AppConfiguration appConfiguration ;
+    private AppConfiguration appConfiguration;
 
     private String ip;
     private int cimServerPort;
     private int httpPort;
+    private String topic;
 
-    public RegistryZK(String ip, int cimServerPort,int httpPort) {
+    public RegistryZK(String ip, int cimServerPort, int httpPort, String topic) {
         this.ip = ip;
         this.cimServerPort = cimServerPort;
-        this.httpPort = httpPort ;
-        zKit = SpringBeanFactory.getBean(ZKit.class) ;
-        appConfiguration = SpringBeanFactory.getBean(AppConfiguration.class) ;
+        this.httpPort = httpPort;
+        this.topic = topic;
+        zKit = SpringBeanFactory.getBean(ZKit.class);
+        appConfiguration = SpringBeanFactory.getBean(AppConfiguration.class);
     }
 
     @Override
@@ -39,8 +41,8 @@ public class RegistryZK implements Runnable {
         zKit.createRootNode();
 
         //是否要将自己注册到 ZK
-        if (appConfiguration.isZkSwitch()){
-            String path = appConfiguration.getZkRoot() + "/ip-" + ip + ":" + cimServerPort + ":" + httpPort;
+        if (appConfiguration.isZkSwitch()) {
+            String path = appConfiguration.getZkRoot() + "/ip-" + ip + ":" + cimServerPort + ":" + httpPort + ":" + topic;
             zKit.createNode(path);
             logger.info("Registry zookeeper success, msg=[{}]", path);
         }

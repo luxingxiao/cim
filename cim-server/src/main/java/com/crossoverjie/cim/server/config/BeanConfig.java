@@ -35,11 +35,14 @@ public class BeanConfig {
     @Bean
     public OkHttpClient okHttpClient() {
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
-        builder.connectTimeout(30, TimeUnit.SECONDS)
-                .readTimeout(10, TimeUnit.SECONDS)
-                .writeTimeout(10,TimeUnit.SECONDS)
+        builder.connectTimeout(5, TimeUnit.MINUTES)
+                .readTimeout(5, TimeUnit.MINUTES)
+                .writeTimeout(5, TimeUnit.MINUTES)
                 .retryOnConnectionFailure(true);
-        return builder.build();
+        OkHttpClient okHttpClient =  builder.build();
+        okHttpClient.dispatcher().setMaxRequestsPerHost(1000000);
+        okHttpClient.dispatcher().setMaxRequests(1000000);
+        return okHttpClient;
     }
 
 
@@ -53,6 +56,7 @@ public class BeanConfig {
                 .setRequestId(0L)
                 .setReqMsg("pong")
                 .setType(Constants.CommandType.PING)
+                .setTimeStamp(System.currentTimeMillis())
                 .build();
         return heart;
     }
