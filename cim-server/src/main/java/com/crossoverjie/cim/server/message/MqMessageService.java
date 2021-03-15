@@ -11,10 +11,14 @@ import org.springframework.stereotype.Service;
  * @author luxingxiao
  */
 @Service
-@RocketMQMessageListener(consumerGroup = "${im.message.consumer-group}", topic = "${im.message.topic}")
+@RocketMQMessageListener(consumerGroup = "${im.message.consumer-group}", topic = "${im.message.topic}", consumeThreadMax = 256)
 public class MqMessageService implements RocketMQListener<SendMsgReqVO> {
-    @Autowired
-    private CIMServer cimServer;
+    private final CIMServer cimServer;
+
+    public MqMessageService(CIMServer cimServer) {
+        this.cimServer = cimServer;
+    }
+
     @Override
     public void onMessage(SendMsgReqVO sendMsgReqVO) {
         cimServer.sendMsg(sendMsgReqVO);
